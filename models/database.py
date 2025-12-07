@@ -25,7 +25,8 @@ class DatabaseManager:
                 port=self.port,
                 database="postgres",
                 user=self.user,
-                password=self.password
+                password=self.password,
+                options="-c client_encoding=utf8"
             )
             conn.close()
             return True
@@ -41,7 +42,8 @@ class DatabaseManager:
                 port=self.port,
                 database=self.database,
                 user=self.user,
-                password=self.password
+                password=self.password,
+                options="-c client_encoding=utf8"
             )
             yield conn
         except psycopg2.Error as e:
@@ -59,7 +61,8 @@ class DatabaseManager:
                 port=self.port,
                 database="postgres",
                 user=self.user,
-                password=self.password
+                password=self.password,
+                options="-c client_encoding=utf8"
             )
             
             conn.autocommit = True
