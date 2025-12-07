@@ -1,4 +1,3 @@
-# main_window.py
 import json
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
@@ -32,7 +31,6 @@ class MainWindow(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Панель выбора темы
         theme_layout = QHBoxLayout()
         theme_layout.addWidget(QLabel("Тема интерфейса:"))
         self.theme_combo = QComboBox()
@@ -44,7 +42,6 @@ class MainWindow(QWidget):
         theme_layout.addWidget(self.theme_combo)
         layout.addLayout(theme_layout)
 
-        # Выбор кабинета
         room_layout = QHBoxLayout()
         room_layout.addWidget(QLabel("Кабинет:"))
         self.classroom_combo = QComboBox()
@@ -53,7 +50,6 @@ class MainWindow(QWidget):
         room_layout.addWidget(self.classroom_combo)
         layout.addLayout(room_layout)
 
-        # Таблица ПК
         self.pc_table = QTableWidget(0, 3)
         self.pc_table.setHorizontalHeaderLabels(["Имя компьютера", "IP-адрес", "Статус"])
         header = self.pc_table.horizontalHeader()

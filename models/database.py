@@ -1,6 +1,3 @@
-"""
-Database model using PostgreSQL with psycopg2
-"""
 import hashlib
 import secrets
 import psycopg2
@@ -10,7 +7,6 @@ import os
 
 
 class DatabaseManager:
-    """Manages database connections and operations"""
     
     def __init__(self, host: str = "localhost", port: int = 5432, 
                  database: str = "pc_manager", user: str = "postgres", 
@@ -23,12 +19,11 @@ class DatabaseManager:
         self.init_database()
     
     def test_connection(self) -> bool:
-        """Test if we can connect to the database"""
         try:
             conn = psycopg2.connect(
                 host=self.host,
                 port=self.port,
-                database="postgres",  # Connect to default database first
+                database="postgres",
                 user=self.user,
                 password=self.password
             )
@@ -39,7 +34,6 @@ class DatabaseManager:
     
     @contextmanager
     def get_connection(self):
-        """Context manager for database connections"""
         conn = None
         try:
             conn = psycopg2.connect(
@@ -59,21 +53,18 @@ class DatabaseManager:
                 conn.close()
     
     def init_database(self):
-        """Initialize the database and create tables if they don't exist"""
         try:
-            # Connect to PostgreSQL server (without specific database) to create database
             conn = psycopg2.connect(
                 host=self.host,
                 port=self.port,
-                database="postgres",  # Connect to default database first
+                database="postgres",
                 user=self.user,
                 password=self.password
             )
             
             conn.autocommit = True
             cur = conn.cursor()
-            
-            # Create database if it doesn't exist
+
             cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s", (self.database,))
             exists = cur.fetchone()
             if not exists:
@@ -81,12 +72,10 @@ class DatabaseManager:
             
             cur.close()
             conn.close()
-            
-            # Now connect to our database and create tables
+
             with self.get_connection() as conn:
                 cur = conn.cursor()
-                
-                # Create users table
+
                 cur.execute("""
                     CREATE TABLE IF NOT EXISTS users (
                         id SERIAL PRIMARY KEY,
@@ -96,16 +85,14 @@ class DatabaseManager:
                         role VARCHAR(20) NOT NULL CHECK (role IN ('teacher', 'admin'))
                     )
                 """)
-                
-                # Create settings table
+
                 cur.execute("""
                     CREATE TABLE IF NOT EXISTS settings (
                         id INTEGER PRIMARY KEY CHECK (id = 1),
                         theme VARCHAR(20) NOT NULL DEFAULT 'light'
                     )
                 """)
-                
-                # Create computers table
+
                 cur.execute("""
                     CREATE TABLE IF NOT EXISTS computers (
                         id SERIAL PRIMARY KEY,
@@ -116,15 +103,13 @@ class DatabaseManager:
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 """)
-                
-                # Insert default settings
+
                 cur.execute("""
                     INSERT INTO settings (id, theme) 
                     VALUES (1, 'light') 
                     ON CONFLICT (id) DO NOTHING
                 """)
                 
-                # Insert default users if they don't exist
                 default_users = [
                     ("teacher", "123456", "teacher"),
                     ("admin", "admin123", "admin")
@@ -139,15 +124,14 @@ class DatabaseManager:
                         ON CONFLICT (username) DO NOTHING
                     """, (username, password_hash, salt, role))
                 
-                # Insert default computers if they don't exist
                 cur.execute("""
                     INSERT INTO computers (name, ip_address, classroom)
                     VALUES 
-                        ('ПК-01', '192.168.1.101', 'Кабинет 201'),
-                        ('ПК-02', '192.168.1.102', 'Кабинет 201'),
-                        ('ПК-03', '192.168.1.103', 'Кабинет 201'),
-                        ('ПК-11', '192.168.1.111', 'Кабинет 202'),
-                        ('ПК-12', '192.168.1.112', 'Кабинет 202')
+                        ('ПК-01', '192.168.1.101', 'Cab 201'),
+                        ('ПК-02', '192.168.1.102', 'Cab 201'),
+                        ('ПК-03', '192.168.1.103', 'Cab 201'),
+                        ('ПК-11', '192.168.1.111', 'Cab 202'),
+                        ('ПК-12', '192.168.1.112', 'Cab 202')
                     ON CONFLICT DO NOTHING
                 """)
                 
@@ -158,18 +142,15 @@ class DatabaseManager:
             raise Exception(f"Database initialization error: {e}")
     
     def _generate_salt(self) -> str:
-        """Generate a random salt for password hashing"""
         return secrets.token_hex(32)
     
     def _hash_password(self, password: str, salt: str) -> str:
-        """Hash password with dynamic salt using PBKDF2"""
         pwd_bytes = password.encode('utf-8')
         salt_bytes = salt.encode('utf-8')
         hash_bytes = hashlib.pbkdf2_hmac('sha256', pwd_bytes, salt_bytes, 100000)
         return hash_bytes.hex()
     
     def verify_user(self, username: str, password: str) -> Tuple[bool, Optional[str]]:
-        """Verify user credentials and return (success, role)"""
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()
@@ -192,7 +173,6 @@ class DatabaseManager:
             return False, None
     
     def get_theme(self) -> str:
-        """Get current theme from database"""
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()
@@ -203,7 +183,6 @@ class DatabaseManager:
             return "light"
     
     def set_theme(self, theme: str) -> bool:
-        """Set theme in database"""
         if theme not in ["light", "dark", "glass"]:
             theme = "light"
         
@@ -217,7 +196,6 @@ class DatabaseManager:
             return False
     
     def get_all_computers(self) -> Dict[str, List[Dict[str, str]]]:
-        """Get all computers grouped by classroom"""
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()
@@ -243,7 +221,6 @@ class DatabaseManager:
             return {}
     
     def add_computer(self, name: str, ip_address: str, classroom: str) -> bool:
-        """Add a new computer to the database"""
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()
@@ -257,7 +234,6 @@ class DatabaseManager:
             return False
     
     def update_computer_status(self, name: str, status: str) -> bool:
-        """Update computer status"""
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()

@@ -1,6 +1,3 @@
-"""
-Computer model representing a computer in the system
-"""
 from dataclasses import dataclass
 from typing import Optional
 

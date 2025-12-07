@@ -1,4 +1,3 @@
-# theme_manager.py
 from PyQt6.QtGui import QColor, QFont, QPalette
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
@@ -70,7 +69,6 @@ class ThemeManager:
         app.setPalette(palette)
         app.setFont(QFont("Segoe UI", 10))
 
-        # Добавляем CSS для "стеклянного" эффекта
         app.setStyleSheet("""
             QMainWindow, QWidget {
                 background: rgba(255, 255, 255, 230);

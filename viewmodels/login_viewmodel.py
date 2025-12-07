@@ -1,6 +1,3 @@
-"""
-Login ViewModel handling login logic
-"""
 from PyQt6.QtCore import pyqtSignal
 from .base_viewmodel import BaseViewModel
 from models.auth_service import AuthService
@@ -8,11 +5,7 @@ from models.user import User
 
 
 class LoginViewModel(BaseViewModel):
-    """ViewModel for login functionality"""
-    
-    # Signal emitted when login is successful
     login_success = pyqtSignal(User)
-    # Signal emitted when login fails
     login_failed = pyqtSignal()
     
     def __init__(self, auth_service: AuthService):
@@ -38,7 +31,6 @@ class LoginViewModel(BaseViewModel):
         self._password = value
     
     def validate_inputs(self) -> bool:
-        """Validate input fields"""
         if not self._username.strip():
             self.notify_error("Введите логин")
             return False
@@ -48,7 +40,6 @@ class LoginViewModel(BaseViewModel):
         return True
     
     def login(self):
-        """Attempt to login with current credentials"""
         try:
             if not self.validate_inputs():
                 return
@@ -69,5 +60,4 @@ class LoginViewModel(BaseViewModel):
             self.login_failed.emit()
     
     def logout(self):
-        """Logout current user"""
         self.auth_service.logout()

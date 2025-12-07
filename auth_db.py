@@ -1,4 +1,3 @@
-# auth_db.py
 import os
 import hashlib
 import sqlite3
@@ -23,16 +22,13 @@ class AuthDatabase:
                     role TEXT NOT NULL CHECK(role IN ('teacher', 'admin'))
                 )
             """)
-            # Таблица настроек
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS settings (
                     id INTEGER PRIMARY KEY CHECK (id = 1),
                     theme TEXT NOT NULL DEFAULT 'light'
                 )
             """)
-            # Вставляем настройки по умолчанию
             cursor.execute("INSERT OR IGNORE INTO settings (id, theme) VALUES (1, 'light')")
-            # Учётные записи по умолчанию
             default_users = [
                 ("teacher", "123456", "teacher"),
                 ("admin", "admin123", "admin")

@@ -1,4 +1,3 @@
-# app.py
 import sys
 from PyQt6.QtWidgets import QApplication
 from auth_db import AuthDatabase
